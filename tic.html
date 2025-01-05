@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+<style>
+body {
+       
+    font-family: Arial, sans-serif;
+    text-align: center;
+    align-items: center;
+    background-color: #f4f4f4;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    animation: gradientMove 10s ease infinite
+}
+
+h1 {
+    margin-top: 20px;
+    color: #333;
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 5px;
+    margin: 20px auto;
+
+}
+
+button {
+            
+    padding: 10px 20px;        
+    font-size: 1.2rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    outline: none;
+    position: relative;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.7), 0 0 15px rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+ }
+
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #ccc;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    border-radius: 10px;
+    position: relative;
+}
+
+.cell.taken {
+    pointer-events: none;
+}
+
+#restart-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+#winner-message {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+    </style>
+</head>
+<body>
+    <h1 style="color: royalblue; text-transform: uppercase; ">Tic-Tac-Toe</h1>
+    <center>
+    <div id="game-board">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+    </div>
+    </center>
+    <h2 id="winner-message" class="hidden">
+        <span id="winner-text"></span>
+    </h2>
+    <button id="restart-button" class="hidden">Restart Game</button>
+    <script>
+        const cells = document.querySelectorAll("[data-cell]");
+const board = document.getElementById("game-board");
+const winnerMessageElement = document.getElementById("winner-message");
+const winnerText = document.getElementById("winner-text");
+const restartButton = document.getElementById("restart-button");
+
+let isCircleTurn;
+
+const WINNING_COMBINATIONS = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];
+
+const startGame = () => {
+    isCircleTurn = false;
+    cells.forEach(cell => {
+        cell.classList.remove("taken");
+        cell.textContent = "";
+        cell.addEventListener("click", handleClick, { once: true });
+    });
+    winnerMessageElement.classList.add("hidden");
+    restartButton.classList.add("hidden");
+};
+
+const handleClick = (e) => {
+    const cell = e.target;
+    const currentClass = isCircleTurn ? "O" : "X";
+
+    
+    placeMark(cell, currentClass);
+
+    
+    if (checkWin(currentClass)) {
+        endGame(false);
+    } else if (isDraw()) {
+        endGame(true);
+    } else {
+        swapTurns();
+    }
+};
+
+const placeMark = (cell, currentClass) => {
+    cell.textContent = currentClass;
+    cell.classList.add("taken");
+};
+
+const swapTurns = () => {
+    isCircleTurn = !isCircleTurn;
+};
+
+const checkWin = (currentClass) => {
+    return WINNING_COMBINATIONS.some(combination => {
+        return combination.every(index => {
+            return cells[index].textContent === currentClass;
+        });
+    });
+};
+
+const isDraw = () => {
+    return [...cells].every(cell => {
+        return cell.classList.contains("taken");
+    });
+};
+
+const endGame = (draw) => {
+    if (draw) {
+        winnerText.textContent = "Draw!";
+    } else {
+        winnerText.textContent = `${isCircleTurn ? "O's" : "X's"} Wins!`;
+    }
+    winnerMessageElement.classList.remove("hidden");
+    restartButton.classList.remove("hidden");
+};
+
+restartButton.addEventListener("click", startGame);
+
+startGame();
+
+    </script>
+</body>
+</html>
